@@ -1,5 +1,5 @@
 {
-  "name": "gcf-runner",
+  "name": "@samwen/gcf-runner",
   "version": "1.0.1",
   "description": "run multiple google cloud functions locally",
   "main": "src/index.js",

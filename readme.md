@@ -4,7 +4,7 @@ use google functions framework to run multiple cloud functions locally for devel
 
 # how to install
 
-npm install gcf-runner
+npm install @samwen/gcf-runner
 
 # how to use
 
@@ -27,7 +27,7 @@ exports.helloEvent = (event, context) => {
 
 3) gcf-runner.js
 <pre>
-const { add_function, run_functions } = require('gcf-runner');
+const { add_function, run_functions } = require('@samwen/gcf-runner');
 const { helloWorld, helloEvent } = require('./functions');
 
 module.exports = {
