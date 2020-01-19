@@ -8,7 +8,7 @@ npm install @samwen/gcf-runner
 
 # how to use
 
-1) functions.js 
+Step 1) functions.js 
 <pre>
 exports.helloWorld = (req, res) => {
   console.log('call helloWorld');
@@ -21,7 +21,7 @@ exports.helloEvent = (event, context) => {
 }
 </pre>
 
-2) gcf-runner.js - it must be the exactly same name
+Step 2) gcf-runner.js - keep it the same name for your convenience
 <pre>
 const { add_function, run_functions } = require('@samwen/gcf-runner');
 const { helloWorld, helloEvent } = require('./functions');
@@ -34,7 +34,7 @@ add_function('helloWorld', helloWorld, 'http');
 add_function('helloEvent', helloEvent, 'event');
 </pre>
 
-3) test code example
+Step 3) test code example
 <pre>
 const axios = require('axios');
 const { start_gcf_runner, stop_gcf_runner } = require('@samwen/gcf-runner');
@@ -50,19 +50,16 @@ describe('test gcf-runner test example', () => {
     });
 
     it('verifies it should have the two functions', async () => {
-
         const response = await axios.get('http://localhost:8080');
         expect(JSON.stringify(response.data)).equals('["helloWorld","helloEvent"]');
     });
 
     it('verifies call helloWorld it should return Hello, World', async () => {
-
         const response = await axios.get('http://localhost:8080/helloWorld');
         expect(response.data).equals('Hello, World');
     });
 
     it('verifies call helloEvent it should return {"Hello":"Event"}', async () => {
-
         const response = await axios.post('http://localhost:8080/helloEvent', {Hello: 'Event'});
         expect(JSON.stringify(response.data)).equals('{"Hello":"Event"}');
     });
@@ -73,7 +70,7 @@ describe('test gcf-runner test example', () => {
 });
 </pre>
 
-4) optional, run google functions framework
+Step 4) optional, run google functions framework
 <pre>
 npx @google-cloud/functions-framework --source=./test/gcf-runner.js --target=run_functions
 </pre>
