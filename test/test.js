@@ -2,7 +2,7 @@
 'use strict';
 
 const axios = require('axios');
-const spawn = require('child_process').spawn;
+const { start_gcf_runner, stop_gcf_runner } = require('../src');
 
 const chai = require('chai');
 const assert = chai.assert;
@@ -11,8 +11,7 @@ const expect = chai.expect;
 describe('test gcf-runner', () => {
 
     before(async () => {
-        const npx = spawn('npx', ['@google-cloud/functions-framework', '--source=./test/gcf-runner.js', '--target=run_functions']);
-        await sleep(500);
+        await start_gcf_runner()
     });
 
     it('verifies it should have the two functions', async () => {
@@ -45,12 +44,6 @@ describe('test gcf-runner', () => {
     });
 
     after(async ()=> {
-        try { await axios.get('http://localhost:8080/exit'); } catch(err) { }
+        await stop_gcf_runner();
     })
 });
-
-function sleep(ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-}   

@@ -1,9 +1,14 @@
+'use strict';
+
+const axios = require('axios');
+const { spawn } = require('child_process');
 
 module.exports = {
+    start_gcf_runner,
+    stop_gcf_runner,
     add_function,
     run_functions,
 };
-
 
 const functions = {};
 
@@ -67,3 +72,27 @@ function run_functions(req, res) {
         }
     }
  }
+
+ function start_gcf_runner(source = './test/gcf-runner.js') {
+    return new Promise((resolve, reject) => {
+        const npx = spawn('npx', ['@google-cloud/functions-framework', '--source=' + source, '--target=run_functions']);
+        npx.stdout.on('data', (data) => {
+            const str = data.toString();
+            if (str.startsWith('Serving function')) {
+                resolve(true);
+            }
+        });
+        npx.stderr.on('data', (data) => {
+            console.error(data);
+            reject(data);
+        });
+    });
+}
+
+async function stop_gcf_runner() {
+    try { 
+        await axios.get('http://localhost:8080/exit'); 
+    } catch(err) { 
+        //
+    }
+}
