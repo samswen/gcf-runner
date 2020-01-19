@@ -29,7 +29,7 @@ exports.helloEvent = (event, context) => {
 
 3. test.js
 <pre>
-const { add_function, run_functions } = require('../src');
+const { add_function, run_functions } = require('@samwen/gcf-runner');
 const { helloWorld, helloEvent } = require('./functions');
 
 module.exports = {
