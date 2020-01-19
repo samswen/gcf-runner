@@ -10,7 +10,7 @@ npm install @samwen/gcf-runner
 
 1. install google functions framework
 
-npm install @google-cloud/functions-framework
+   npm install @google-cloud/functions-framework
 
 2. functions.js 
 <pre>
@@ -42,4 +42,4 @@ add_function('helloEvent', helloEvent, 'event');
 
 4. run google functions framework
 
-npx @google-cloud/functions-framework --source=test.js --target=run_functions
+   npx @google-cloud/functions-framework --source=test.js --target=run_functions
