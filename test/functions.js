@@ -6,7 +6,5 @@ exports.helloWorld = (req, res) => {
 
 exports.helloEvent = (event, context) => {
     console.log('call helloEvent');
-    const str = Buffer.from(event.data, 'base64').toString();
-    const data = JSON.parse(str);
-    return data;
+    return Buffer.from(event.data, 'base64').toString();
 }
