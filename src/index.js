@@ -88,17 +88,15 @@ function run_functions(req, res) {
             if (str.startsWith('Serving function')) {
                 resolve(true);
             }
-            if (env.stage_env && env.stage_env === 'test') {
-                console.log('gcf-runner --->');
-                console.log(str);
-                console.log('<--- gcf-runner');
-            }
+            console.log('*** gcf-runner --->');
+            console.log(str);
+            console.log('<--- gcf-runner ***');
         });
         npx.stderr.on('data', (data) => {
             const str = data.toString();
-            console.error('gcf-runner error --->');
+            console.error('*** gcf-runner error --->');
             console.error(str);
-            console.error('<--- gcf-runner error');
+            console.error('<--- gcf-runner error ***');
             reject(str);
         });
     });
