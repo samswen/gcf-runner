@@ -42,6 +42,7 @@ function run_functions(req, res) {
         res.send('function ' + name + ' not found');
         return;
     }
+    
     req.url = req.url.replace(req.path, '');
     if (fn.type === 'http') {
         try {
@@ -74,17 +75,31 @@ function run_functions(req, res) {
  }
 
  function start_gcf_runner(source = './test/gcf-runner.js') {
+    const env = Object.create(process.env);
+    if (!env.stage_env) {
+        env.stage_env = 'test';
+    }
     return new Promise((resolve, reject) => {
-        const npx = spawn('npx', ['@google-cloud/functions-framework', '--source=' + source, '--target=run_functions']);
+        const npx = spawn('npx', 
+            ['@google-cloud/functions-framework', '--source=' + source, '--target=run_functions'],
+            { env });
         npx.stdout.on('data', (data) => {
             const str = data.toString();
             if (str.startsWith('Serving function')) {
                 resolve(true);
             }
+            if (env.stage_env && env.stage_env === 'test') {
+                console.log('gcf-runner --->');
+                console.log(str);
+                console.log('<--- gcf-runner');
+            }
         });
         npx.stderr.on('data', (data) => {
-            console.error(data);
-            reject(data);
+            const str = data.toString();
+            console.error('gcf-runner error --->');
+            console.error(str);
+            console.error('<--- gcf-runner error');
+            reject(str);
         });
     });
 }
