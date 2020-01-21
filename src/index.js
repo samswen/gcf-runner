@@ -13,13 +13,16 @@ module.exports = {
 const functions = {};
 
 function add_function(name, func, type = 'http') {
-    if (typeof func === 'function') {
-        functions[name] = {func, type};
-        return true;
-    } else {
+    if (typeof func !== 'function') {
         console.error('not function');
         return false;
     }
+    if (type !== 'http' && type !== 'event') {
+        console.error('unknown type ' + type);
+        return false;
+    }
+    functions[name] = {func, type};
+    return true;
 }
 
 function run_functions(req, res) {
@@ -28,9 +31,10 @@ function run_functions(req, res) {
         process.kill(process.pid, "SIGINT");
     }
     if (!name) {
-        const names = [];
+        const names = {};
         for (let name in functions) {
-            names.push(name);
+            const fn = functions[name];
+            names[name] = fn.type;
         }
         res.status(200);
         res.send(names);
@@ -80,13 +84,15 @@ function run_functions(req, res) {
         env.stage_env = 'test';
     }
     return new Promise((resolve, reject) => {
+        let resolved = false;
         const npx = spawn('npx', 
             ['@google-cloud/functions-framework', '--source=' + source, '--target=run_functions'],
             { env });
         npx.stdout.on('data', (data) => {
             const str = data.toString();
-            if (str.startsWith('Serving function')) {
+            if (!resolved && str.startsWith('Serving function')) {
                 resolve(true);
+                resolved = true;
             }
             console.log('*** gcf-runner --->');
             console.log(str);
@@ -97,15 +103,28 @@ function run_functions(req, res) {
             console.error('*** gcf-runner error --->');
             console.error(str);
             console.error('<--- gcf-runner error ***');
-            reject(str);
+            if (!resolved) {
+                reject(str);
+                resolved = true;
+            }
         });
     });
 }
 
-async function stop_gcf_runner() {
+async function send_exit_to_stop() {
     try { 
         await axios.get('http://localhost:8080/exit'); 
     } catch(err) { 
         //
     }
+}
+
+function stop_gcf_runner(delay_in_seconds = 0) {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            send_exit_to_stop().then(() => {
+                resolve(true);
+            });
+        }, delay_in_seconds * 1000);
+    });
 }

@@ -19,9 +19,9 @@ describe('test gcf-runner', () => {
         const response = await axios.get('http://localhost:8080');
         //console.log(response.data);
         assert.isNotNull(response.data);
-        expect(response.data).is.an('array');
-        expect(response.data.length).equals(2);
-        expect(JSON.stringify(response.data)).equals('["helloWorld","helloEvent"]');
+        expect(response.data).is.an('object');
+        expect(Object.keys(response.data).length).equals(2);
+        expect(JSON.stringify(response.data)).equals('{"helloWorld":"http","helloEvent":"event"}');
 
     });
 

@@ -8,7 +8,7 @@ npm install @samwen/gcf-runner
 
 # how to use
 
-Step 1) functions.js 
+## Step 1) functions.js 
 <pre>
 exports.helloWorld = (req, res) => {
   console.log('call helloWorld');
@@ -21,7 +21,8 @@ exports.helloEvent = (event, context) => {
 }
 </pre>
 
-Step 2) gcf-runner.js - keep it the same name for your convenience
+## Step 2) gcf-runner.js
+keep it the same name for your convenience.
 <pre>
 const { add_function, run_functions } = require('@samwen/gcf-runner');
 const { helloWorld, helloEvent } = require('./functions');
@@ -34,7 +35,7 @@ add_function('helloWorld', helloWorld, 'http');
 add_function('helloEvent', helloEvent, 'event');
 </pre>
 
-Step 3) test code example
+## Step 3) test code example
 <pre>
 const axios = require('axios');
 const { start_gcf_runner, stop_gcf_runner } = require('@samwen/gcf-runner');
@@ -70,7 +71,7 @@ describe('test gcf-runner test example', () => {
 });
 </pre>
 
-Step 4) optional, run google functions framework
+## Step 4) optional, run google functions framework
 <pre>
 npx @google-cloud/functions-framework --source=./test/gcf-runner.js --target=run_functions
 </pre>
