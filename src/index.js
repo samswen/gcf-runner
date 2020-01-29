@@ -63,27 +63,19 @@ function run_http_function(name, func, req, res) {
         if (ret.then && typeof ret.then === 'function') {
             ret.then((result) => {
                 process.stdout.write('<< ' + name + ' finished\n');
-                res.status(200);
-                res.send(result);
                 return 'OK';
             }).catch((err) => {
                 process.stdout.write('<< ' + name + ' finished with exception\n');
                 console.error(err);
-                res.status(500);
-                res.send(err.message);
                 return 'error';
             })
         } else {
             process.stdout.write('<< ' + name + ' finished\n');
-            res.status(200);
-            res.send(ret);
             return 'OK';
         }
     } catch (err) {
         process.stdout.write('<< ' + name + ' finished with exception\n');
         console.error(err);
-        res.status(500);
-        res.send(err.message);
         return 'error';
     }
 }
