@@ -52,7 +52,7 @@ describe('test gcf-runner test example', () => {
 
     it('verifies it should have the two functions', async () => {
         const response = await axios.get('http://localhost:8080');
-        expect(JSON.stringify(response.data)).equals('["helloWorld","helloEvent"]');
+        expect(JSON.stringify(response.data)).equals('{"helloWorld":"http","helloEvent":"event"}');
     });
 
     it('verifies call helloWorld it should return Hello, World', async () => {
