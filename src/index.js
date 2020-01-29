@@ -8,6 +8,8 @@ module.exports = {
     stop_gcf_runner,
     add_function,
     run_functions,
+    watch_topic_event,
+    watch_http_api_url,
 };
 
 const functions = {};
@@ -46,39 +48,88 @@ function run_functions(req, res) {
         res.send('function ' + name + ' not found');
         return;
     }
-    
     req.url = req.url.replace(req.path, '');
     if (fn.type === 'http') {
-        try {
-            return fn.func(req, res);
-        } catch (err) {
-            console.error(err);
-            res.status(500);
-            res.send(err.message);
-        }
+        return run_http_function(name, fn.func, req, res);
     } else {
-        let data = req.body;
-        if (data) {
-            if (typeof data === 'object') {
-                data = JSON.stringify(data);
-            } else if (typeof data !== 'string') {
-                data = String(data);
-            }
-        }
-        const event = {data: Buffer.from(data).toString('base64')};
-        try {
-            const result = fn.func(event, {});
+        return run_event_function(name, fn.func, req, res);
+    }
+}
+
+function run_http_function(name, func, req, res) {
+    process.stdout.write('>> ' + name + ' starting ...\n');
+    try {
+        const ret = func(req, res);
+        if (ret.then && typeof ret.then === 'function') {
+            ret.then((result) => {
+                process.stdout.write('<< ' + name + ' finished\n');
+                res.status(200);
+                res.send(result);
+                return 'OK';
+            }).catch((err) => {
+                process.stdout.write('<< ' + name + ' finished with exception\n');
+                console.error(err);
+                res.status(500);
+                res.send(err.message);
+                return 'error';
+            })
+        } else {
+            process.stdout.write('<< ' + name + ' finished\n');
             res.status(200);
-            res.send(result);
-        } catch (err) {
-            console.error(err);
-            res.status(500);
-            res.send(err.message);
+            res.send(ret);
+            return 'OK';
+        }
+    } catch (err) {
+        process.stdout.write('<< ' + name + ' finished with exception\n');
+        console.error(err);
+        res.status(500);
+        res.send(err.message);
+        return 'error';
+    }
+}
+
+function run_event_function(name, func, req, res) {
+    let data = req.body;
+    if (data) {
+        if (typeof data === 'object') {
+            data = JSON.stringify(data);
+        } else if (typeof data !== 'string') {
+            data = String(data);
         }
     }
- }
+    const event = {data: Buffer.from(data).toString('base64')};
+    process.stdout.write('>> ' + name + ' starting ...\n');
+    try {
+        const ret = func(event, {});
+        if (ret.then && typeof ret.then === 'function') {
+            ret.then((result) => {
+                process.stdout.write('<< ' + name + ' finished\n');
+                res.status(200);
+                res.send(result);
+                return 'OK';
+            }).catch((err) => {
+                process.stdout.write('<< ' + name + ' finished with error\n');
+                console.error(err);
+                res.status(500);
+                res.send(err.message);
+                return 'error';
+            })
+        } else {
+            process.stdout.write('<< ' + name + ' finished\n');
+            res.status(200);
+            res.send(ret);
+            return 'OK';
+        }
+    } catch (err) {
+        process.stdout.write('<< ' + name + ' finished with exception\n');
+        console.error(err);
+        res.status(500);
+        res.send(err.message);
+        return 'error';
+    }
+}
 
- function start_gcf_runner(source = './test/gcf-runner.js') {
+function start_gcf_runner(source = './test/gcf-runner.js') {
     const env = Object.create(process.env);
     if (!env.stage_env) {
         env.stage_env = 'test';
@@ -94,15 +145,11 @@ function run_functions(req, res) {
                 resolve(true);
                 resolved = true;
             }
-            console.log('*** gcf-runner --->');
-            console.log(str);
-            console.log('<--- gcf-runner ***');
+            process.stdout.write(str);
         });
         npx.stderr.on('data', (data) => {
             const str = data.toString();
-            console.error('*** gcf-runner error --->');
-            console.error(str);
-            console.error('<--- gcf-runner error ***');
+            process.stderr.write('error: ' + str);
             if (!resolved) {
                 reject(str);
                 resolved = true;
@@ -127,4 +174,27 @@ function stop_gcf_runner(delay_in_seconds = 0) {
             });
         }, delay_in_seconds * 1000);
     });
+}
+
+async function watch_topic_event(pubSubEvent, context) {
+    const data = Buffer.from(pubSubEvent.data, 'base64').toString();
+    const event = JSON.parse(data);
+    console.log(JSON.stringify(event));
+    return 'OK';
+}
+
+async function  watch_http_api_url(req, res) {
+    console.log('method: ' + req.method);
+    if (req.query && Object.keys(req.query).length > 0) {
+        console.log('query: ' + JSON.stringify(req.query));
+    }
+    if (req.body) {
+        if (typeof req.body === 'string') {
+            console.log('body: ' + req.body);
+        } else if (Object.keys(req.body).length > 0) {
+            console.log('body: ' + JSON.stringify(req.body));
+        }
+    }
+    res.status(200);
+    return 'OK';
 }
