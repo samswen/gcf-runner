@@ -175,7 +175,7 @@ async function watch_topic_event(pubSubEvent, context) {
     return 'OK';
 }
 
-async function  watch_http_api_url(req, res) {
+async function watch_http_api_url(req, res) {
     console.log('method: ' + req.method);
     if (req.query && Object.keys(req.query).length > 0) {
         console.log('query: ' + JSON.stringify(req.query));
@@ -188,5 +188,6 @@ async function  watch_http_api_url(req, res) {
         }
     }
     res.status(200);
+    res.send('OK');
     return 'OK';
 }

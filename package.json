@@ -1,6 +1,6 @@
 {
   "name": "@samwen/gcf-runner",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "run multiple google cloud functions locally",
   "main": "src/index.js",
   "directories": {
@@ -32,7 +32,7 @@
     "axios": "^0.19.1"
   },
   "devDependencies": {
-    "@samwen/gcp-utils": "^1.0.3",
+    "@samwen/gcp-utils": "^1.0.4",
     "chai": "^4.2.0",
     "eslint": "^6.8.0",
     "mocha": "^6.2.2",

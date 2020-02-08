@@ -14,7 +14,7 @@ describe('test gcf-runner', () => {
     before(async () => {
         await start_gcf_runner()
     });
-
+    
     it('verifies it should have the 4 functions with type', async () => {
 
         const response = await axios.get('http://localhost:8080');
@@ -52,11 +52,11 @@ describe('test gcf-runner', () => {
         expect(response.data).equals('OK')
 
     });
-
+    
     it('verifies get call watch_http_api_url it should response OK', async () => {
 
         const response = await axios.get('http://localhost:8080/watch_http_api_url');
-        //console.log(response.data);
+        //console.log(response);
         assert.isNotNull(response.data);
         expect(response.data).equals('OK')
 
@@ -66,7 +66,7 @@ describe('test gcf-runner', () => {
 
         const response = await axios.post('http://localhost:8080/watch_http_api_url?q=test', {test: 'watch_http_api_url'});
         //console.log(response.data);
-        assert.isNotNull(response.data);
+        assert.isNotNull(response);
         expect(response.data).equals('OK')
 
     });
