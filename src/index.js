@@ -127,25 +127,27 @@ function start_gcf_runner(source = './test/gcf-runner.js') {
         env.stage_env = 'test';
     }
     return new Promise((resolve, reject) => {
-        let resolved = false;
-        const npx = spawn('npx', 
-            ['@google-cloud/functions-framework', '--source=' + source, '--target=run_functions'],
-            { env });
-        npx.stdout.on('data', (data) => {
-            const str = data.toString();
-            if (!resolved && str.startsWith('Serving function')) {
-                resolve(true);
-                resolved = true;
-            }
-            process.stdout.write(str);
-        });
-        npx.stderr.on('data', (data) => {
-            const str = data.toString();
-            process.stderr.write('error: ' + str);
-            if (!resolved) {
-                reject(str);
-                resolved = true;
-            }
+        send_exit_to_stop().then(() => { // to release the listenning port, in case it is still opened
+            let resolved = false;
+            const npx = spawn('npx', 
+                ['@google-cloud/functions-framework', '--source=' + source, '--target=run_functions'],
+                { env });
+            npx.stdout.on('data', (data) => {
+                const str = data.toString();
+                if (!resolved && str.startsWith('Serving function')) {
+                    resolve(true);
+                    resolved = true;
+                }
+                process.stdout.write(str);
+            });
+            npx.stderr.on('data', (data) => {
+                const str = data.toString();
+                process.stderr.write('error: ' + str);
+                if (!resolved) {
+                    reject(str);
+                    resolved = true;
+                }
+            });
         });
     });
 }
