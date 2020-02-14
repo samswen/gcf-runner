@@ -173,20 +173,21 @@ function stop_gcf_runner(delay_in_seconds = 0) {
 async function watch_topic_event(pubSubEvent, context) {
     const data = Buffer.from(pubSubEvent.data, 'base64').toString();
     const event = JSON.parse(data);
-    console.log(JSON.stringify(event));
+    console.log(event);
     return 'OK';
 }
 
 async function watch_http_api_url(req, res) {
     console.log('method: ' + req.method);
+    console.log('headers: ', req.headers);
     if (req.query && Object.keys(req.query).length > 0) {
-        console.log('query: ' + JSON.stringify(req.query));
+        console.log('query: ', req.query);
     }
     if (req.body) {
         if (typeof req.body === 'string') {
             console.log('body: ' + req.body);
         } else if (Object.keys(req.body).length > 0) {
-            console.log('body: ' + JSON.stringify(req.body));
+            console.log('body: ', req.body);
         }
     }
     res.status(200);
