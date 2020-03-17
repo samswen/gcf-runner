@@ -1,6 +1,6 @@
 {
   "name": "@samwen/gcf-runner",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "run multiple google cloud functions locally",
   "main": "src/index.js",
   "directories": {
@@ -27,15 +27,15 @@
     "url": "https://github.com/samswen/gcf-runner/issues"
   },
   "homepage": "https://github.com/samswen/gcf-runner#readme",
-  "dependencies": {
-    "@google-cloud/functions-framework": "^1.3.2",
-    "axios": "^0.19.1"
-  },
   "devDependencies": {
-    "@samwen/gcp-utils": "^1.0.4",
+    "@samwen/gcp-utils": "^1.0.6",
     "chai": "^4.2.0",
     "eslint": "^6.8.0",
-    "mocha": "^6.2.2",
-    "sinon": "^8.0.2"
+    "mocha": "^7.1.0",
+    "sinon": "^9.0.1"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^1.5.0",
+    "axios": "^0.19.2"
   }
 }
