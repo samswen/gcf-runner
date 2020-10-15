@@ -60,7 +60,7 @@ function run_http_function(name, func, req, res) {
     process.stdout.write('>> ' + name + ' starting ...\n');
     try {
         const ret = func(req, res);
-        if (ret.then && typeof ret.then === 'function') {
+        if (ret && ret.then && typeof ret.then === 'function') {
             ret.then((result) => {
                 process.stdout.write('<< ' + name + ' finished\n');
                 return 'OK';
